@@ -1,5 +1,5 @@
 require 'autotest/growl'
-require 'autotest/fsevenot'
+require 'autotest/fsevent'
 
 Autotest.add_hook :initialize do |autotest|
   autotest.add_mapping(/^spec\/requests\/.*_spec\.rb$/) do
