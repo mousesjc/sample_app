@@ -67,6 +67,23 @@ describe UsersController do
       get :new
       response.should have_selector('title', :content => 'Sign up')
     end
+    
+    describe "for signed in users" do
+      before(:each) do
+        @user = Factory(:user)
+        test_sign_in(@user)
+      end
+      
+      it "should redirect to root" do
+        get :new
+        response.should redirect_to(root_path)
+      end
+      
+      it "should have a flash message" do
+        get :new
+        flash[:notice].should =~ /cannot/
+      end
+    end
   end
   
   describe "GET 'show'" do
@@ -291,8 +308,8 @@ describe UsersController do
     describe "as an admin user" do
       
       before(:each) do
-        admin = Factory(:user, :email => "admin@example.com", :admin => true)
-        test_sign_in(admin)
+        @admin = Factory(:user, :email => "admin@example.com", :admin => true)
+        test_sign_in(@admin)
       end
       
       it "should destroy the user" do
@@ -304,6 +321,21 @@ describe UsersController do
       it "should redirect to the users page" do
         delete :destroy, :id => @user
         response.should redirect_to(users_path)
+      end
+      
+      describe "trying to delete himself" do
+        
+        it "should not destroy the user" do
+          lambda do
+            delete :destroy, :id => @admin
+          end.should_not change(User, :count)
+        end
+        
+        it "should redirect to users page with error" do
+          delete :destroy, :id => @admin
+          response.should redirect_to(users_path)
+          flash[:error].should =~ /yourself/i
+        end
       end
     end
   end
