@@ -40,7 +40,7 @@ describe "Users" do
   describe "sign in/out" do
     
     describe "failure" do
-      it "should not sing a user in" do
+      it "should not sign a user in" do
         user = User.new(:email => "", :password => "")
         integration_sign_in(user)
         response.should have_selector("div.flash.error", :content => "Invalid")
